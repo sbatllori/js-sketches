@@ -16,7 +16,7 @@ function draw() {
 
   let mouse = {x: mouseX, y: mouseY, bEdge: bEdge, colorIdx: colorIdx};
   let points = savedPoints.concat([mouse]);
-  if (mouseIsPressed) savedPoints.push(mouse);
+  if (mouseIsPressed) saveCurrentPointNoDuplicates(mouse, 50);
 
   // Draw edges
   strokeWeight(15);
@@ -30,11 +30,7 @@ function draw() {
       // Draw the normal vector of the edge at its middle point
       let direction = createVector(q.x - p.x, q.y - p.y);
       let midPoint = createVector(p.x, p.y).add(direction.div(2));
-      let normal = direction
-        .copy()
-        .rotate(HALF_PI)
-        // .normalize()
-        .mult(0.5);
+      let normal = direction.copy().rotate(HALF_PI).normalize().mult(50);
 
       line(
         midPoint.x,
@@ -49,7 +45,7 @@ function draw() {
   strokeWeight(0);
   points.forEach((p) => {
     fill(0);
-    circle(p.x, p.y, 80);
+    circle(p.x, p.y, 70);
 
     fill(255);
     circle(p.x, p.y, 50);
@@ -63,5 +59,19 @@ function keyPressed() {
 
   if (keyCode === 'C'.charCodeAt(0)) {
     colorIdx = (colorIdx + 1) % edgeColors.length;
+  }
+}
+
+// TODO this is not functional programming
+function saveCurrentPointNoDuplicates(current, distThreshold) {
+  if (savedPoints.length === 0) {
+    savedPoints.push(current);
+  } else {
+    const last = savedPoints[savedPoints.length - 1];
+
+    createVector(last.x, last.y).dist(createVector(current.x, current.y)) >
+    distThreshold
+      ? savedPoints.push(current)
+      : null;
   }
 }
