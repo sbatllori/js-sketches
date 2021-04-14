@@ -1,13 +1,10 @@
-// https://www.color-hex.com/color-palette/107816
-const palette1 = ['#bfd9d7', '#ddbd4d', '#4c807c', '#987239', '#353745'];
-// https://www.color-hex.com/color-palette/95230
-const palette2 = ['#f8e6d1', '#f39f87', '#f6af1a', '#978e91', '#36513a'];
+// Connected dots
+
+let savedPoints = [];
 
 let bEdge = true;
-let edgeColorIdx = 0;
-const edgeColors = palette2;
-
-let savedPoints = []; // [x y bEdge edgeColorIdx]
+let colorIdx = 0;
+const edgeColors = ['#fec520', '#b01b22', '#209915', '#1a257f'];
 
 function setup() {
   createCanvas(1080, 1080);
@@ -17,43 +14,45 @@ function setup() {
 function draw() {
   background(50);
 
-  let mouse = [mouseX, mouseY, bEdge, edgeColorIdx];
+  let mouse = {x: mouseX, y: mouseY, bEdge: bEdge, colorIdx: colorIdx};
   let points = savedPoints.concat([mouse]);
   if (mouseIsPressed) savedPoints.push(mouse);
 
   // Draw edges
   strokeWeight(15);
   R.aperture(2, points).forEach(([p, q]) => {
-    if (q[2]) {
-      stroke(edgeColors[q[3]]);
-      line(p[0], p[1], q[0], q[1]);
+    if (q.bEdge) {
+      stroke(edgeColors[q.colorIdx]);
 
-      // Draw a normal line in the middle of the edge
-      // - compute direction P---->Q
-      // - compute middle point P--x--Q
-      // - compute normal vector
-      let direction = createVector(q[0] - p[0], q[1] - p[1]);
-      let middelPoint = [p[0] + direction.x / 2, p[1] + direction.y / 2];
-      direction.rotate(HALF_PI).normalize();
+      // Draw and edge between P and Q
+      line(p.x, p.y, q.x, q.y);
 
-      const normalLength = 50;
+      // Draw the normal vector of the edge at its middle point
+      let direction = createVector(q.x - p.x, q.y - p.y);
+      let midPoint = createVector(p.x, p.y).add(direction.div(2));
+      let normal = direction
+        .copy()
+        .rotate(HALF_PI)
+        // .normalize()
+        .mult(0.5);
+
       line(
-        middelPoint[0],
-        middelPoint[1],
-        middelPoint[0] + normalLength * direction.x,
-        middelPoint[1] + normalLength * direction.y
+        midPoint.x,
+        midPoint.y,
+        midPoint.x + normal.x,
+        midPoint.y + normal.y
       );
     }
   });
 
   // Draw points
   strokeWeight(0);
-  points.forEach(([x, y]) => {
+  points.forEach((p) => {
     fill(0);
-    circle(x, y, 80);
+    circle(p.x, p.y, 80);
 
     fill(255);
-    circle(x, y, 50);
+    circle(p.x, p.y, 50);
   });
 }
 
@@ -63,6 +62,6 @@ function keyPressed() {
   }
 
   if (keyCode === 'C'.charCodeAt(0)) {
-    edgeColorIdx = (edgeColorIdx + 1) % edgeColors.length;
+    colorIdx = (colorIdx + 1) % edgeColors.length;
   }
 }
