@@ -4,7 +4,7 @@ let savedPoints = [];
 
 let bEdge = true;
 let colorIdx = 0;
-const edgeColors = ['#fec520', '#b01b22', '#209915', '#1a257f'];
+const colors = ['#fec520', '#b01b22', '#209915', '#1a257f'];
 
 function setup() {
   createCanvas(1080, 1080);
@@ -16,15 +16,15 @@ function draw() {
 
   let mouse = {x: mouseX, y: mouseY, bEdge: bEdge, colorIdx: colorIdx};
   let points = savedPoints.concat([mouse]);
-  if (mouseIsPressed) saveCurrentPointNoDuplicates(mouse, 50);
+  if (mouseIsPressed && !isLastTooCloseTo(mouse, 50)) savedPoints.push(mouse);
 
   // Draw edges
   strokeWeight(15);
   R.aperture(2, points).forEach(([p, q]) => {
     if (q.bEdge) {
-      stroke(edgeColors[q.colorIdx]);
+      stroke(colors[q.colorIdx]);
 
-      // Draw and edge between P and Q
+      // Draw an edge between P and Q
       line(p.x, p.y, q.x, q.y);
 
       // Draw the normal vector of the edge at its middle point
@@ -58,20 +58,15 @@ function keyPressed() {
   }
 
   if (keyCode === 'C'.charCodeAt(0)) {
-    colorIdx = (colorIdx + 1) % edgeColors.length;
+    colorIdx = (colorIdx + 1) % colors.length;
   }
 }
 
-// TODO this is not functional programming
-function saveCurrentPointNoDuplicates(current, distThreshold) {
-  if (savedPoints.length === 0) {
-    savedPoints.push(current);
-  } else {
-    const last = savedPoints[savedPoints.length - 1];
+function isLastTooCloseTo(currentPoint, tooCloseThreshold) {
+  if (savedPoints.length === 0) return false;
 
-    createVector(last.x, last.y).dist(createVector(current.x, current.y)) >
-    distThreshold
-      ? savedPoints.push(current)
-      : null;
-  }
+  const lastPoint = savedPoints[savedPoints.length - 1];
+  const last = createVector(lastPoint.x, lastPoint.y);
+  const current = createVector(currentPoint.x, currentPoint.y);
+  return last.dist(current) <= tooCloseThreshold;
 }
