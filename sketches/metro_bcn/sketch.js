@@ -1,4 +1,4 @@
-// Connected dots
+// Metro BCN
 
 let savedPoints = [];
 
@@ -12,7 +12,7 @@ function setup() {
 }
 
 function draw() {
-  background(50);
+  background(255);
 
   let mouse = {x: mouseX, y: mouseY, bEdge: bEdge, colorIdx: colorIdx};
   let points = savedPoints.concat([mouse]);
