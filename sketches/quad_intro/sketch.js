@@ -1,22 +1,17 @@
 // Quad Intro
 
+let corners;
 const capture = false;
 
-let corners;
-let font;
-const fontsize = 40;
-
 function preload() {
-  font = loadFont('../../assets/Fishfingers.ttf');
+  wmPreload();
 }
 
 function setup() {
   createCanvas(1080, 1080);
   frameRate(60);
 
-  textFont(font);
-  textSize(fontsize);
-  textAlign(CENTER, CENTER);
+  wmSetup();
 
   corners = [
     [0.2 * width, 0.2 * height], // top left
@@ -28,13 +23,7 @@ function setup() {
 
 function draw() {
   if (capture) preCapture();
-
-  background(22);
-
-  fill(220);
-  strokeWeight(0);
-  const s = 70;
-  square(s, s, width - 2 * s, 0.5 * s);
+  wmDraw(color(220), color(22));
 
   noFill();
   stroke(22);
@@ -58,21 +47,5 @@ function draw() {
     y + (i - 1) * cos(0.05 * frameCount),
   ]);
 
-  textAlign(RIGHT);
-  fill(235, 143, 52);
-  text('@soo.logical', width - 15, height - 35);
-
   if (capture) postCapture(374);
-}
-
-function preCapture() {
-  if (frameCount === 1) capturer.start();
-}
-
-function postCapture(numFrames) {
-  if (frameCount <= numFrames) capturer.capture(canvas);
-  else if (frameCount === numFrames + 1) {
-    capturer.save();
-    capturer.stop();
-  }
 }
