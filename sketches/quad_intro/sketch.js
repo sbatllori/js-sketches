@@ -10,7 +10,7 @@ function preload() {
 
 function setup() {
   createCanvas(1080, 1080);
-  frameRate(60);
+  frameRate(fps);
 
   wmSetup();
   wmBackgroundColor = color(220);

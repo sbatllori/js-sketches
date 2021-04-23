@@ -20,7 +20,7 @@ SOO_LAST_CAPTURED_FRAME = 2000;
 
 function setup() {
   createCanvas(1080, 1080);
-  frameRate(60);
+  frameRate(fps);
   bgColor = color(22);
 
   // Define the arc bands
@@ -98,11 +98,10 @@ function draw() {
 
   // Apply speed to quiet arcBands
   arcBands
-    .filter((x) => x.speed === 0)
-    .map((x, i) => {
-      x.speed = sin(t + i * radians(x.rotateDeg)) + cos(t * (i + 1));
-      return x;
-    });
+    .filter((x) => x.speed == 0)
+    .forEach(
+      (x, i) => (x.speed = sin(t + i * radians(x.rotateDeg)) + cos(t * (i + 1)))
+    );
 
   // Draw the arc bands centered on the middle of the screen
   arcBands.forEach((x) => {
