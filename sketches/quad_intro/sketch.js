@@ -2,6 +2,7 @@
 
 let corners;
 const capture = false;
+SOO_LAST_CAPTURED_FRAME = 374;
 
 function preload() {
   wmPreload();
@@ -12,6 +13,8 @@ function setup() {
   frameRate(60);
 
   wmSetup();
+  wmBackgroundColor = color(220);
+  wmFrameColor = color(22);
 
   corners = [
     [0.2 * width, 0.2 * height], // top left
@@ -23,7 +26,7 @@ function setup() {
 
 function draw() {
   if (capture) preCapture();
-  wmDraw(color(220), color(22));
+  wmDraw();
 
   noFill();
   stroke(22);
@@ -47,5 +50,5 @@ function draw() {
     y + (i - 1) * cos(0.05 * frameCount),
   ]);
 
-  if (capture) postCapture(374);
+  if (capture) postCapture();
 }

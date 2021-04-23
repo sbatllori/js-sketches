@@ -1,7 +1,5 @@
-// WIP
+// Arc Bands
 
-let bgColor;
-let arcBands = [];
 const colors = [
   '#fac71e',
   '#fac8e6',
@@ -14,15 +12,19 @@ const colors = [
   '#383838',
 ];
 
+let bgColor;
+let arcBands = [];
+
 const capture = false;
+SOO_LAST_CAPTURED_FRAME = 2000;
 
 function setup() {
   createCanvas(1080, 1080);
   frameRate(60);
-
   bgColor = color(22);
 
-  // diameter, width, arcDeg, rotateDeg, fillColor, strokeColor, strokeWidth, speed
+  // Define the arc bands
+  // diameter, width, arc, rotate, fill, stroke, strokeWidth, speed
   addArcBand(450, 50, 90, -5, colors[3], colors[3], 5, -1);
   addArcBand(450, 30, 95, 180, colors[2], colors[3], 5, 2);
 
@@ -91,26 +93,30 @@ function draw() {
   if (capture) preCapture();
 
   background(bgColor);
-  const kSpeed = frameCount / 200;
+  let t = frameCount;
+  const kSpeed = t / 200;
 
+  // Apply speed to quiet arcBands
   arcBands
     .filter((x) => x.speed === 0)
     .map((x, i) => {
-      x.speed =
-        sin(frameCount + i * radians(x.rotateDeg)) + cos(frameCount * (i + 1));
+      x.speed = sin(t + i * radians(x.rotateDeg)) + cos(t * (i + 1));
       return x;
     });
 
-  arcBands.forEach((arcBand) => {
+  // Draw the arc bands centered on the middle of the screen
+  arcBands.forEach((x) => {
     push();
     translate(width / 2, height / 2);
-    rotate(arcBand.speed * kSpeed);
-    drawArcBand(arcBand);
-    drawArcBandStroke(arcBand);
+    rotate(x.speed * kSpeed);
+
+    drawArcBand(x);
+    drawArcBandStroke(x);
+
     pop();
   });
 
-  if (capture) postCapture(374);
+  if (capture) postCapture();
 }
 
 function addArcBand(
