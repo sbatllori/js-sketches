@@ -1,18 +1,18 @@
-// wip
+// fractal tree
 
 let bgColor;
 const minBranchLen = 10;
 const maxBranchLen = 200;
 
 const capture = false;
-SOO_LAST_CAPTURED_FRAME = 2000;
+SOO_LAST_CAPTURED_FRAME = 361;
 
 function setup() {
   createCanvas(1080, 1080, WEBGL);
   frameRate(fps);
   angleMode(DEGREES);
 
-  bgColor = color(220);
+  bgColor = color(255);
 }
 
 function draw() {
@@ -20,19 +20,39 @@ function draw() {
 
   background(bgColor);
 
-  noFill();
-  stroke(22);
-  strokeWeight(2);
-  line(-500, 200, 500, 200);
-
+  fill(220);
+  stroke(200);
+  strokeWeight(5);
+  const theta = frameCount - 45;
   const r = 0.4 * width;
-  const x = r * cos(frameCount + 180);
-  const y = r * sin(-frameCount);
-  circle(x, y, 100);
+  const x = r * cos(theta + 180);
+  const y = r * sin(-theta);
+  push();
+  {
+    translate(0, 0, -maxBranchLen - 1);
+    ellipse(x, y, 150, 150, 40);
+  }
+  pop();
 
-  scale(1.5);
+  push();
+  {
+    translate(0, 0, -maxBranchLen);
+
+    fill(bgColor);
+    strokeWeight(0);
+    rect(-width / 2, 200, width, height);
+
+    noFill();
+    stroke(200);
+    strokeWeight(5);
+    line(-600, 200, 600, 200);
+  }
+  pop();
+
+  scale(1.25);
+  rotateY(frameCount);
   randomSeed(1);
-  // drawTree(200, 0, 250, 0);
+  drawTree(200, 0, 300, 0);
 
   if (capture) postCapture();
 }
