@@ -5,7 +5,7 @@ const minBranchLen = 10;
 const maxBranchLen = 200;
 
 const capture = false;
-SOO_LAST_CAPTURED_FRAME = 361;
+SOO_LAST_CAPTURED_FRAME = 15;
 
 function setup() {
   createCanvas(1080, 1080, WEBGL);
@@ -19,7 +19,12 @@ function draw() {
   if (capture) preCapture();
 
   background(bgColor);
+  drawTreeGeneratorGrid();
 
+  if (capture) postCapture();
+}
+
+function drawSceneWithMoon() {
   fill(220);
   stroke(200);
   strokeWeight(5);
@@ -53,8 +58,37 @@ function draw() {
   rotateY(frameCount);
   randomSeed(1);
   drawTree(200, 0, 300, 0);
+}
 
-  if (capture) postCapture();
+function drawTreeGeneratorGrid() {
+  translate(-width / 2, -height / 2, 0);
+  const gridMargin = 20;
+  const cellLength = width / 3 - 15;
+
+  noFill();
+  stroke(200);
+  strokeWeight(5);
+  rect(
+    gridMargin + 2 * cellLength,
+    gridMargin + cellLength,
+    cellLength,
+    cellLength
+  );
+  ellipse(
+    gridMargin + 0.5 * cellLength,
+    gridMargin + 2.5 * cellLength,
+    cellLength,
+    cellLength,
+    50
+  );
+
+  for (let i = 0; i < 3; ++i) {
+    for (let j = 0; j < 3; j++) {
+      const x = gridMargin + (i + 0.5) * cellLength;
+      const y = gridMargin + (j + 0.85) * cellLength;
+      drawTree(100, x, y, 0);
+    }
+  }
 }
 
 function branchRecursive(len) {
@@ -127,7 +161,7 @@ function drawLeafs(len) {
   rotateZ(90);
   randomSeed(null);
   rotateX(random(-20, 20));
-  randomSeed(1);
+
   beginShape();
   for (let i = 0; i <= 90; ++i) {
     vertex(r * cos(i), r * sin(i));
