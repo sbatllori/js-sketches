@@ -1,7 +1,18 @@
-// canvas_utils.js
+/**
+ * Assumes the following variables have been initialized:
+ * - capturer (CCapture)
+ * - frameCount, canvas, width, height (p5)
+ */
 
-// Capturer functions
-let SOO_LAST_CAPTURED_FRAME = 300;
+/******************************************************************************
+ * Static variables
+ *****************************************************************************/
+let SOO_LAST_CAPTURED_FRAME;
+
+/******************************************************************************
+ * Functions to capture the canvas
+ *****************************************************************************/
+SOO_LAST_CAPTURED_FRAME = 1;
 
 function preCapture() {
   if (frameCount === 1) capturer.start();
@@ -15,31 +26,48 @@ function postCapture() {
   }
 }
 
-// Framed water mark functions
-let wmFont;
-let wmBackgroundColor = '#dcdcdc';
-let wmFrameColor = '#161616';
-let wmTextColor = '#eb8f34';
+/******************************************************************************
+ * Class to define and draw a water mark frame
+ *****************************************************************************/
+class FramedWaterMark {
+  constructor() {
+    this.backgroundColor = '#dcdcdc';
+    this.frameColor = '#161616';
+    this.textColor = '#eb8f34';
+  }
 
-function wmPreload() {
-  wmFont = loadFont('../../assets/Fishfingers.ttf');
-}
+  setBackgroundColor(backgroundColor) {
+    this.backgroundColor = backgroundColor;
+  }
 
-function wmSetup() {
-  textFont(wmFont);
-  textSize(40);
-  textAlign(CENTER, CENTER);
-}
+  setFrameColor(frameColor) {
+    this.frameColor = frameColor;
+  }
 
-function wmDraw() {
-  background(wmFrameColor);
+  setTextColor(textColor) {
+    this.textColor = textColor;
+  }
 
-  fill(wmBackgroundColor);
-  strokeWeight(0);
-  const s = 70;
-  square(s, s, width - 2 * s, 0.5 * s);
+  preload() {
+    this.font = loadFont('../../assets/Fishfingers.ttf');
+  }
 
-  textAlign(RIGHT);
-  fill(235, 143, 52);
-  text('@soo.logical', width - 15, height - 35);
+  setup() {
+    textFont(this.font);
+    textSize(40);
+    textAlign(CENTER, CENTER);
+  }
+
+  draw() {
+    background(this.frameColor);
+
+    fill(this.backgroundColor);
+    strokeWeight(0);
+    const s = 70;
+    square(s, s, width - 2 * s, 0.5 * s);
+
+    textAlign(RIGHT);
+    fill(this.textColor);
+    text('@soo.logical', width - 15, height - 35);
+  }
 }

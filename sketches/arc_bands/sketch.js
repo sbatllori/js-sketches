@@ -1,5 +1,18 @@
-// Arc Bands
+/**
+ * Animated design of a bunch of arc bands moving in circles around the center
+ * of the canvas.
+ */
 
+/******************************************************************************
+ * Settings from libraries/soo/canvas_utils.js
+ *****************************************************************************/
+const capture = false;
+SOO_LAST_CAPTURED_FRAME = 2000;
+
+/******************************************************************************
+ * Sketch
+ *****************************************************************************/
+let bgColor, arcBand;
 const colors = [
   '#fac71e',
   '#fac8e6',
@@ -12,19 +25,15 @@ const colors = [
   '#383838',
 ];
 
-let bgColor;
-let arcBands = [];
-
-const capture = false;
-SOO_LAST_CAPTURED_FRAME = 2000;
-
 function setup() {
   createCanvas(1080, 1080);
   frameRate(fps);
+
   bgColor = color(22);
+  arcBands = [];
 
   // Define the arc bands
-  // diameter, width, arc, rotate, fill, stroke, strokeWidth, speed
+  // (diameter, width, arc, rotate, fill, stroke, strokeWidth, speed)
   addArcBand(450, 50, 90, -5, colors[3], colors[3], 5, -1);
   addArcBand(450, 30, 95, 180, colors[2], colors[3], 5, 2);
 
@@ -87,31 +96,29 @@ function setup() {
   arcBands.sort((left, right) =>
     left.diameter - left.width / 2 < right.diameter - right.width / 2 ? 1 : -1
   );
+
+  // Apply a custom speed to the arcBands with speed set to 0
+  arcBands
+    .filter((x) => x.speed == 0)
+    .forEach((x, i) => {
+      x.speed = sin(1 + i * radians(x.rotateDeg)) + cos(i + 1);
+    });
 }
 
 function draw() {
   if (capture) preCapture();
 
   background(bgColor);
-  let t = frameCount;
-  const kSpeed = t / 200;
+  translate(width / 2, height / 2);
+  const kSpeed = frameCount / 200;
 
-  // Apply speed to quiet arcBands
-  arcBands
-    .filter((x) => x.speed == 0)
-    .forEach(
-      (x, i) => (x.speed = sin(t + i * radians(x.rotateDeg)) + cos(t * (i + 1)))
-    );
-
-  // Draw the arc bands centered on the middle of the screen
   arcBands.forEach((x) => {
     push();
-    translate(width / 2, height / 2);
-    rotate(x.speed * kSpeed);
-
-    drawArcBand(x);
-    drawArcBandStroke(x);
-
+    {
+      rotate(x.speed * kSpeed);
+      drawArcBand(x);
+      drawArcBandStroke(x);
+    }
     pop();
   });
 
@@ -145,26 +152,29 @@ function drawArcBand(arcBand) {
   const outerDiameter = arcBand.diameter + arcBand.width / 2.0;
 
   push();
-  rotate(radians(arcBand.rotateDeg));
+  {
+    rotate(radians(arcBand.rotateDeg));
 
-  // Draw the band without contour
-  strokeWeight(0);
+    // Draw the band without contour
+    strokeWeight(0);
 
-  fill(arcBand.fillColor);
-  arc(0, 0, outerDiameter, outerDiameter, 0, radians(arcBand.arcDeg));
+    fill(arcBand.fillColor);
+    arc(0, 0, outerDiameter, outerDiameter, 0, radians(arcBand.arcDeg));
 
-  fill(bgColor);
-  arc(0, 0, innerDiameter, innerDiameter, 0, radians(arcBand.arcDeg));
+    fill(bgColor);
+    arc(0, 0, innerDiameter, innerDiameter, 0, radians(arcBand.arcDeg));
 
-  // Hide possible edges to the center
-  stroke(bgColor);
-  strokeWeight(2);
-  line(0, 0, innerDiameter / 2.0, 0);
-  push();
-  rotate(radians(arcBand.arcDeg));
-  line(0, 0, innerDiameter / 2.0, 0);
-  pop();
-
+    // Hide possible edges to the center
+    stroke(bgColor);
+    strokeWeight(2);
+    line(0, 0, innerDiameter / 2.0, 0);
+    push();
+    {
+      rotate(radians(arcBand.arcDeg));
+      line(0, 0, innerDiameter / 2.0, 0);
+    }
+    pop();
+  }
   pop();
 }
 
@@ -173,21 +183,24 @@ function drawArcBandStroke(arcBand) {
   const outerDiameter = arcBand.diameter + arcBand.width / 2.0;
 
   push();
-  rotate(radians(arcBand.rotateDeg));
+  {
+    rotate(radians(arcBand.rotateDeg));
 
-  // Draw the arcs of the band contour
-  noFill();
-  stroke(arcBand.strokeColor);
-  strokeWeight(arcBand.strokeWidth);
-  arc(0, 0, outerDiameter, outerDiameter, 0, radians(arcBand.arcDeg));
-  arc(0, 0, innerDiameter, innerDiameter, 0, radians(arcBand.arcDeg));
+    // Draw the arcs of the band contour
+    noFill();
+    stroke(arcBand.strokeColor);
+    strokeWeight(arcBand.strokeWidth);
+    arc(0, 0, outerDiameter, outerDiameter, 0, radians(arcBand.arcDeg));
+    arc(0, 0, innerDiameter, innerDiameter, 0, radians(arcBand.arcDeg));
 
-  // Draw the lines of the band contour
-  line(innerDiameter / 2.0, 0, outerDiameter / 2.0, 0);
-  push();
-  rotate(radians(arcBand.arcDeg));
-  line(innerDiameter / 2.0, 0, outerDiameter / 2.0, 0);
-  pop();
-
+    // Draw the lines of the band contour
+    line(innerDiameter / 2.0, 0, outerDiameter / 2.0, 0);
+    push();
+    {
+      rotate(radians(arcBand.arcDeg));
+      line(innerDiameter / 2.0, 0, outerDiameter / 2.0, 0);
+    }
+    pop();
+  }
   pop();
 }

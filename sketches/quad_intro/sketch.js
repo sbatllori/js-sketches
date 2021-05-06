@@ -1,20 +1,31 @@
-// Quad Intro
+/**
+ * Draws a sequence of quads, each one a bit smaller than the previous one, that
+ * get deformed in a looping animation.
+ */
 
-let corners;
+/******************************************************************************
+ * Settings from libraries/soo/canvas_utils.js
+ *****************************************************************************/
 const capture = false;
 SOO_LAST_CAPTURED_FRAME = 374;
+let framedWaterMark = new FramedWaterMark();
+
+/******************************************************************************
+ * Sketch
+ *****************************************************************************/
+let corners;
 
 function preload() {
-  wmPreload();
+  framedWaterMark.preload();
 }
 
 function setup() {
   createCanvas(1080, 1080);
   frameRate(fps);
 
-  wmSetup();
-  wmBackgroundColor = color(220);
-  wmFrameColor = color(22);
+  framedWaterMark.setup();
+  framedWaterMark.setBackgroundColor(color(220));
+  framedWaterMark.setFrameColor(color(22));
 
   corners = [
     [0.2 * width, 0.2 * height], // top left
@@ -26,7 +37,7 @@ function setup() {
 
 function draw() {
   if (capture) preCapture();
-  wmDraw();
+  framedWaterMark.draw();
 
   noFill();
   stroke(22);

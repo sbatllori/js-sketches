@@ -1,11 +1,21 @@
-// fractal tree
+/**
+ * Fractal tree generator through a recursive function `branchRecursive()`. Two
+ * scenes are available: (1) A single big tree rotating with a moonrise and
+ * moonset,and (2) a grid of 3x3 random trees getting generated.
+ */
 
-let bgColor;
-const minBranchLen = 10;
-const maxBranchLen = 200;
-
+/******************************************************************************
+ * Settings from libraries/soo/canvas_utils.js
+ *****************************************************************************/
 const capture = false;
 SOO_LAST_CAPTURED_FRAME = 15;
+
+/******************************************************************************
+ * Sketch
+ *****************************************************************************/
+let bgColor, randomSeedAfterLeafs;
+const minBranchLen = 10;
+const maxBranchLen = 200;
 
 function setup() {
   createCanvas(1080, 1080, WEBGL);
@@ -19,22 +29,30 @@ function draw() {
   if (capture) preCapture();
 
   background(bgColor);
+  // (1)
+  // drawSceneWithMoon();
+
+  // (2)
   drawTreeGeneratorGrid();
 
   if (capture) postCapture();
 }
 
 function drawSceneWithMoon() {
-  fill(220);
-  stroke(200);
-  strokeWeight(5);
-  const theta = frameCount - 45;
-  const r = 0.4 * width;
-  const x = r * cos(theta + 180);
-  const y = r * sin(-theta);
+  randomSeedAfterLeafs = 1;
+
   push();
   {
     translate(0, 0, -maxBranchLen - 1);
+
+    const theta = frameCount - 45;
+    const r = 0.4 * width;
+    const x = r * cos(theta + 180);
+    const y = r * sin(-theta);
+
+    fill(220);
+    stroke(200);
+    strokeWeight(5);
     ellipse(x, y, 150, 150, 40);
   }
   pop();
@@ -61,6 +79,8 @@ function drawSceneWithMoon() {
 }
 
 function drawTreeGeneratorGrid() {
+  randomSeedAfterLeafs = null;
+
   translate(-width / 2, -height / 2, 0);
   const gridMargin = 20;
   const cellLength = width / 3 - 15;
@@ -102,9 +122,11 @@ function branchRecursive(len) {
       rotateY(random(-30, 30));
 
       push();
-      rotateZ(45);
-      rotateZ(random(-10, 10));
-      branchRecursive(0.62 * len);
+      {
+        rotateZ(45);
+        rotateZ(random(-10, 10));
+        branchRecursive(0.62 * len);
+      }
       pop();
     }
   } else {
@@ -161,6 +183,7 @@ function drawLeafs(len) {
   rotateZ(90);
   randomSeed(null);
   rotateX(random(-20, 20));
+  randomSeed(randomSeedAfterLeafs);
 
   beginShape();
   for (let i = 0; i <= 90; ++i) {

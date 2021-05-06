@@ -1,14 +1,23 @@
-// Metro BCN
+/**
+ * Displays a dot on the mouse position, and, when pressed, draws the dot and a
+ * line connecting it to the next dot. The line also draws its normal on the
+ * middle point between the two dots that define it. Several colors and options
+ * are available to draw the edges.
+ */
 
-let savedPoints = [];
-
-let bEdge = true;
-let colorIdx = 0;
+/******************************************************************************
+ * Sketch
+ *****************************************************************************/
+let savedPoints, bEdge, colorIdx;
 const colors = ['#fec520', '#b01b22', '#209915', '#1a257f'];
 
 function setup() {
   createCanvas(1080, 1080);
   frameRate(60);
+
+  savedPoints = [];
+  bEdge = true;
+  colorIdx = 0;
 }
 
 function draw() {
@@ -19,9 +28,10 @@ function draw() {
   if (mouseIsPressed && !isLastTooCloseTo(mouse, 50)) savedPoints.push(mouse);
 
   // Draw edges
-  strokeWeight(15);
-  R.aperture(2, points).forEach(([p, q]) => {
-    if (q.bEdge) {
+  R.aperture(2, points)
+    .filter(([_, q]) => q.bEdge)
+    .forEach(([p, q]) => {
+      strokeWeight(15);
       stroke(colors[q.colorIdx]);
 
       // Draw an edge between P and Q
@@ -38,8 +48,7 @@ function draw() {
         midPoint.x + normal.x,
         midPoint.y + normal.y
       );
-    }
-  });
+    });
 
   // Draw points
   strokeWeight(0);
